@@ -68,16 +68,16 @@
     } else if (totalNet < 0) {
       const bentos = Math.floor(Math.abs(totalNet) / BENTO_PRICE);
       bentoLine.textContent = bentos > 0
-        ? `請了台彩 ${bentos} 個便當`
-        : `再輸 NT$${BENTO_PRICE - Math.abs(totalNet)} 就能請台彩吃一個便當了`;
-      bentoRow.innerHTML = "🍱".repeat(Math.min(bentos, BENTO_MAX_SHOW));
+        ? `請了台彩 ${bentos} 個漢堡王`
+        : `再輸 NT$${BENTO_PRICE - Math.abs(totalNet)} 就能請台彩吃一個漢堡王了`;
+      bentoRow.innerHTML = "🍔".repeat(Math.min(bentos, BENTO_MAX_SHOW));
     } else if (totalNet === 0) {
       bentoLine.textContent = "目前和台彩打平，繼續加油！";
       bentoRow.innerHTML = "";
     } else {
       const bentos = Math.floor(totalNet / BENTO_PRICE);
-      bentoLine.textContent = `你可以請自己吃 ${bentos} 個便當慶祝一下！`;
-      bentoRow.innerHTML = "🍱".repeat(Math.min(bentos, BENTO_MAX_SHOW));
+      bentoLine.textContent = `你可以請自己吃 ${bentos} 個漢堡王慶祝一下！`;
+      bentoRow.innerHTML = "🍔".repeat(Math.min(bentos, BENTO_MAX_SHOW));
     }
 
     const roiEl = document.getElementById("home-roi");
@@ -93,14 +93,13 @@
     const burgerStack = document.getElementById("burger-stack");
     const layers = Math.floor(Math.max(totalNet, 0) / BURGER_LAYER_STEP);
     if (layers <= 0) {
-      const remain = totalNet >= 0 ? BURGER_LAYER_STEP - totalNet : BURGER_LAYER_STEP;
-      burgerLine.textContent = `你的漢堡肉堆疊了 0 層，肉呢？快去賺一層！`;
+      burgerLine.textContent = `你的冰淇淋疊了 0 球，快去賺一球！`;
     } else {
       const remain = (layers + 1) * BURGER_LAYER_STEP - totalNet;
-      burgerLine.textContent = `你的漢堡肉堆疊了 ${layers} 層！再賺 NT$${Math.max(remain, 0)} 就能再疊一層！`;
+      burgerLine.textContent = `你的冰淇淋疊了 ${layers} 球！再賺 NT$${Math.max(remain, 0)} 就能再疊一球！`;
     }
     burgerStack.innerHTML = layers > 0
-      ? "🥩".repeat(Math.min(layers, BURGER_MAX_SHOW))
+      ? "🍦".repeat(Math.min(layers, BURGER_MAX_SHOW))
       : "";
 
     const jackpotBody = document.getElementById("jackpot-body");
