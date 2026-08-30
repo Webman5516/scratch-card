@@ -6,3 +6,6 @@
 
 /index.html
   Cache-Control: no-cache
+
+/icon-180.png
+  Cache-Control: no-cache
