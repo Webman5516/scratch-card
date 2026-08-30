@@ -123,20 +123,6 @@ html, body {
 .pl-figure.positive { color: var(--green); }
 .pl-figure.negative { color: var(--text); }
 
-.fun-line {
-  margin: 0 0 12px;
-  font-size: 15px;
-  color: var(--text);
-}
-
-.bento-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 26px;
-  min-height: 0;
-}
-
 .roi-figure {
   margin: 0 0 14px;
   font-size: 40px;
@@ -165,25 +151,6 @@ html, body {
   font-weight: 700;
 }
 
-.burger-box {
-  margin-top: 16px;
-  padding: 14px;
-  background: var(--gray-bg);
-  border-radius: 12px;
-}
-#burger-line {
-  margin: 0 0 10px;
-  font-size: 14px;
-  line-height: 1.5;
-}
-.burger-stack {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 2px;
-  align-items: center;
-}
-.burger-layer { font-size: 22px; line-height: 1; }
-
 .jackpot-card {
   border: 2px solid var(--green);
   text-align: center;
@@ -199,6 +166,33 @@ html, body {
   color: var(--green);
 }
 .jackpot-amount .prefix { font-size: 20px; font-weight: 700; margin-right: 4px; }
+
+/* ---- analytics ---- */
+#period-toggle { margin: 0 0 4px; }
+
+.chart-legend {
+  display: flex;
+  gap: 18px;
+  margin-bottom: 16px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+}
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  display: inline-block;
+}
+.dot-invested { background: #2a78d6; }
+.dot-won { background: #eb6834; }
+
+.chart-wrap { position: relative; width: 100%; }
 
 /* ---- records list ---- */
 .record-list {
@@ -483,4 +477,6 @@ html, body {
   #ticket-code-input { color: #0a84ff; caret-color: #0a84ff; }
   #purchase-date-input { color: #0a84ff; color-scheme: dark; }
   #username-input { color: var(--text); }
+  .dot-invested { background: #3987e5; }
+  .dot-won { background: #d95926; }
 }

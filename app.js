@@ -4,15 +4,17 @@
   const API_BASE = "https://scratch-card-5cv.pages.dev";
   const STORAGE_KEY = "johunt_records_v1";
   const USERNAME_KEY = "johunt_username";
-  const BENTO_PRICE = 75; // NT$ per lunchbox-turned-burger-king, calibrated so -450 -> 6
-  const BURGER_LAYER_STEP = 100; // NT$ profit per ice-cream scoop
-  const BENTO_MAX_SHOW = 30;
-  const BURGER_MAX_SHOW = 12;
+  const CHART_COLORS = {
+    light: { invested: "#2a78d6", won: "#eb6834", grid: "rgba(0,0,0,0.06)", text: "#85898a" },
+    dark: { invested: "#3987e5", won: "#d95926", grid: "rgba(255,255,255,0.08)", text: "#9a9a9e" },
+  };
 
   /* ---------- state ---------- */
   let records = [];
   let username = localStorage.getItem(USERNAME_KEY) || "";
   let draft = { editingId: null, price: null, isWin: true, amount: "", cardNumber: "", purchaseDate: "" };
+  let analyticsChart = null;
+  let analyticsPeriod = "year";
 
   /* ---------- local cache (fallback/offline) ---------- */
   function loadLocalCache() {
@@ -118,26 +120,6 @@
     plEl.classList.toggle("positive", totalNet > 0);
     plEl.classList.toggle("negative", totalNet <= 0);
 
-    const bentoLine = document.getElementById("home-bento-line");
-    const bentoRow = document.getElementById("home-bento-row");
-    if (count === 0) {
-      bentoLine.textContent = "還沒有任何紀錄，快去刮一張！";
-      bentoRow.innerHTML = "";
-    } else if (totalNet < 0) {
-      const bentos = Math.floor(Math.abs(totalNet) / BENTO_PRICE);
-      bentoLine.textContent = bentos > 0
-        ? `請了台彩 ${bentos} 個漢堡王`
-        : `再輸 NT$${BENTO_PRICE - Math.abs(totalNet)} 就能請台彩吃一個漢堡王了`;
-      bentoRow.innerHTML = "🍔".repeat(Math.min(bentos, BENTO_MAX_SHOW));
-    } else if (totalNet === 0) {
-      bentoLine.textContent = "目前和台彩打平，繼續加油！";
-      bentoRow.innerHTML = "";
-    } else {
-      const bentos = Math.floor(totalNet / BENTO_PRICE);
-      bentoLine.textContent = `你可以請自己吃 ${bentos} 個漢堡王慶祝一下！`;
-      bentoRow.innerHTML = "🍔".repeat(Math.min(bentos, BENTO_MAX_SHOW));
-    }
-
     const roiEl = document.getElementById("home-roi");
     roiEl.innerHTML = roi.toFixed(1) + '<span class="roi-pct">%</span>';
     roiEl.classList.toggle("positive", roi > 0);
@@ -146,19 +128,6 @@
     const netEl = document.getElementById("home-net");
     netEl.textContent = (totalNet > 0 ? "+" : totalNet < 0 ? "-" : "±") + fmtMoney(totalNet);
     document.getElementById("home-count").textContent = `${count} 張`;
-
-    const burgerLine = document.getElementById("burger-line");
-    const burgerStack = document.getElementById("burger-stack");
-    const layers = Math.floor(Math.max(totalNet, 0) / BURGER_LAYER_STEP);
-    if (layers <= 0) {
-      burgerLine.textContent = `你的冰淇淋疊了 0 球，快去賺一球！`;
-    } else {
-      const remain = (layers + 1) * BURGER_LAYER_STEP - totalNet;
-      burgerLine.textContent = `你的冰淇淋疊了 ${layers} 球！再賺 NT$${Math.max(remain, 0)} 就能再疊一球！`;
-    }
-    burgerStack.innerHTML = layers > 0
-      ? "🍦".repeat(Math.min(layers, BURGER_MAX_SHOW))
-      : "";
 
     const jackpotBody = document.getElementById("jackpot-body");
     if (jackpot) {
@@ -235,18 +204,123 @@
     renderAll();
   }
 
+  /* ---------- rendering: analytics ---------- */
+  function groupRecordsByPeriod(mode) {
+    const map = new Map();
+    for (const r of records) {
+      const key = mode === "year" ? r.purchaseDate.slice(0, 4) : r.purchaseDate.slice(0, 7);
+      if (!map.has(key)) map.set(key, { invested: 0, won: 0 });
+      const entry = map.get(key);
+      entry.invested += r.price;
+      if (r.isWin) entry.won += r.amount;
+    }
+    const keys = [...map.keys()].sort();
+    return {
+      labels: keys.map((k) => (mode === "year" ? k : k.replace("-", "/"))),
+      invested: keys.map((k) => map.get(k).invested),
+      won: keys.map((k) => map.get(k).won),
+    };
+  }
+
+  function renderAnalyticsChart() {
+    const canvas = document.getElementById("analytics-chart");
+    const empty = document.getElementById("analytics-empty");
+    const { labels, invested, won } = groupRecordsByPeriod(analyticsPeriod);
+
+    if (labels.length === 0) {
+      empty.classList.remove("hidden");
+      canvas.style.display = "none";
+      if (analyticsChart) {
+        analyticsChart.destroy();
+        analyticsChart = null;
+      }
+      return;
+    }
+    empty.classList.add("hidden");
+    canvas.style.display = "";
+
+    const dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const colors = dark ? CHART_COLORS.dark : CHART_COLORS.light;
+
+    const data = {
+      labels,
+      datasets: [
+        {
+          type: "bar",
+          label: "購買總金額",
+          data: invested,
+          backgroundColor: colors.invested,
+          borderRadius: 4,
+          maxBarThickness: 36,
+          order: 2,
+        },
+        {
+          type: "line",
+          label: "中獎金額",
+          data: won,
+          borderColor: colors.won,
+          backgroundColor: colors.won,
+          borderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          pointBackgroundColor: colors.won,
+          tension: 0.25,
+          order: 1,
+        },
+      ],
+    };
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${fmtMoney(ctx.parsed.y)}`,
+          },
+        },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: colors.text } },
+        y: {
+          beginAtZero: true,
+          grid: { color: colors.grid },
+          ticks: {
+            color: colors.text,
+            callback: (v) => "NT$" + Number(v).toLocaleString("en-US"),
+          },
+        },
+      },
+    };
+
+    if (analyticsChart) {
+      analyticsChart.data = data;
+      analyticsChart.options = options;
+      analyticsChart.update();
+    } else {
+      analyticsChart = new Chart(canvas.getContext("2d"), { type: "bar", data, options });
+    }
+  }
+
   function renderAll() {
     renderHome();
     renderRecords();
+    if (!document.getElementById("view-analytics").classList.contains("hidden")) {
+      renderAnalyticsChart();
+    }
   }
 
   /* ---------- view switching ---------- */
   function showView(name) {
     document.getElementById("view-home").classList.toggle("hidden", name !== "home");
     document.getElementById("view-records").classList.toggle("hidden", name !== "records");
+    document.getElementById("view-analytics").classList.toggle("hidden", name !== "analytics");
     document.querySelectorAll(".nav-btn[data-view]").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.view === name);
     });
+    if (name === "analytics") renderAnalyticsChart();
   }
 
   /* ---------- record modal ---------- */
@@ -254,7 +328,7 @@
     draft = { editingId: null, price: null, isWin: true, amount: "", cardNumber: "", purchaseDate: todayISODate() };
     document.getElementById("modal-title").textContent = "新紀錄";
     document.querySelectorAll(".price-btn").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll(".segment").forEach((b) => b.classList.toggle("active", b.dataset.win === "true"));
+    document.querySelectorAll("#win-toggle .segment").forEach((b) => b.classList.toggle("active", b.dataset.win === "true"));
     document.getElementById("amount-input").value = "";
     document.getElementById("ticket-code-input").value = "";
     document.getElementById("purchase-date-input").value = draft.purchaseDate;
@@ -273,7 +347,7 @@
     };
     document.getElementById("modal-title").textContent = "編輯紀錄";
     document.querySelectorAll(".price-btn").forEach((b) => b.classList.toggle("active", Number(b.dataset.price) === r.price));
-    document.querySelectorAll(".segment").forEach((b) => b.classList.toggle("active", (b.dataset.win === "true") === r.isWin));
+    document.querySelectorAll("#win-toggle .segment").forEach((b) => b.classList.toggle("active", (b.dataset.win === "true") === r.isWin));
     document.getElementById("amount-input").value = r.isWin ? r.amount : "";
     document.getElementById("ticket-code-input").value = r.cardNumber || "";
     document.getElementById("purchase-date-input").value = r.purchaseDate;
@@ -385,7 +459,7 @@
     const btn = e.target.closest(".segment");
     if (!btn) return;
     draft.isWin = btn.dataset.win === "true";
-    document.querySelectorAll(".segment").forEach((b) => b.classList.toggle("active", b === btn));
+    document.querySelectorAll("#win-toggle .segment").forEach((b) => b.classList.toggle("active", b === btn));
     document.getElementById("amount-field").classList.toggle("hidden", !draft.isWin);
     updateConfirmState();
   });
@@ -414,6 +488,14 @@
     }
     const item = e.target.closest(".record-item");
     if (item) openEditModal(item.dataset.id);
+  });
+
+  document.getElementById("period-toggle").addEventListener("click", (e) => {
+    const btn = e.target.closest(".segment");
+    if (!btn) return;
+    analyticsPeriod = btn.dataset.period;
+    document.querySelectorAll("#period-toggle .segment").forEach((b) => b.classList.toggle("active", b === btn));
+    renderAnalyticsChart();
   });
 
   document.getElementById("user-badge").addEventListener("click", () => openUserModal(false));

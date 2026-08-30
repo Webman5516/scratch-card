@@ -24,8 +24,6 @@
         <div class="card">
           <p class="card-label">累計損益</p>
           <p class="pl-figure" id="home-pl">NT$ 0</p>
-          <p class="fun-line" id="home-bento-line">還沒有任何紀錄，快去刮一張！</p>
-          <div class="bento-row" id="home-bento-row"></div>
         </div>
 
         <div class="card">
@@ -44,10 +42,6 @@
               <p class="stat-label">累計張數</p>
               <p class="stat-value" id="home-count">0 張</p>
             </div>
-          </div>
-          <div class="burger-box">
-            <p id="burger-line">你的冰淇淋疊了 0 球，快去賺一球！</p>
-            <div class="burger-stack" id="burger-stack"></div>
           </div>
         </div>
 
@@ -73,6 +67,30 @@
       </div>
     </section>
 
+    <!-- ============ ANALYTICS ============ -->
+    <section class="view hidden" id="view-analytics">
+      <header class="topbar">
+        <h1 class="brand records-title">分析</h1>
+      </header>
+      <div class="scroll-area">
+        <div class="segmented" id="period-toggle">
+          <button class="segment active" data-period="year">年度</button>
+          <button class="segment" data-period="month">每月</button>
+        </div>
+
+        <div class="card">
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot dot-invested"></span>購買總金額</span>
+            <span class="legend-item"><span class="legend-dot dot-won"></span>中獎金額</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="analytics-chart" height="240"></canvas>
+          </div>
+          <p class="empty-state hidden" id="analytics-empty">目前還沒有資料可以分析</p>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ BOTTOM NAV ============ -->
     <nav class="bottom-nav">
       <button class="nav-btn active" data-view="home" aria-label="首頁">
@@ -82,6 +100,11 @@
           <path
             d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"
             fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <button class="nav-btn" data-view="analytics" aria-label="分析">
+        <svg viewBox="0 0 24 24" class="nav-icon">
+          <path d="M4 20V10M11 20V4M18 20v-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </button>
       <button class="nav-btn nav-fab" id="btn-add-from-nav" aria-label="新增紀錄">＋</button>
@@ -156,6 +179,7 @@
     </div>
 
   </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
   <script src="app.js"></script>
 </body>
 
