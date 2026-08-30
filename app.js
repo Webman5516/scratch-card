@@ -8,6 +8,9 @@
     light: { invested: "#2a78d6", won: "#eb6834", grid: "rgba(0,0,0,0.06)", text: "#85898a" },
     dark: { invested: "#3987e5", won: "#d95926", grid: "rgba(255,255,255,0.08)", text: "#9a9a9e" },
   };
+  const WIN_ICON = '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const LOSE_ICON = '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+  const MEDALS = ["🥇", "🥈", "🥉"];
 
   /* ---------- state ---------- */
   let records = [];
@@ -136,6 +139,7 @@
         <p class="jackpot-emoji">🎉</p>
         <p class="jackpot-caption">恭喜中獎</p>
         <p class="jackpot-amount"><span class="prefix">NT$</span>${jackpot.amount.toLocaleString("en-US")}</p>
+        <p class="jackpot-date">中獎日 ${fmtPurchaseDate(jackpot.purchaseDate)}</p>
       `;
     } else {
       jackpotBody.className = "jackpot-empty";
@@ -144,6 +148,7 @@
         <p class="jackpot-caption">尚未中獎，再刮一張試試手氣！</p>
       `;
     }
+    document.getElementById("jackpot-viewall").classList.toggle("hidden", !jackpot);
 
     document.getElementById("user-badge-name").textContent = username || "設定使用者";
 
@@ -168,9 +173,12 @@
   function cardStatRowsHtml(stats) {
     return stats.map((s, i) => {
       const pct = Math.round(s.rate * 100);
+      const rankHtml = i < 3
+        ? `<span class="card-stat-rank medal">${MEDALS[i]}</span>`
+        : `<span class="card-stat-rank">${i + 1}</span>`;
       return `
         <button class="card-stat-row" data-card="${escapeHtml(s.card)}">
-          <span class="card-stat-rank">${i + 1}</span>
+          ${rankHtml}
           <div class="card-stat-info">
             <p class="card-stat-number">${escapeHtml(s.card)}</p>
             <p class="card-stat-ratio">${s.won} / ${s.total} 張</p>
@@ -209,6 +217,35 @@
     document.getElementById("all-cards-overlay").classList.add("hidden");
   }
 
+  function recordItemHtml(r, opts = {}) {
+    const { showCard = false, showDelete = false, editable = false } = opts;
+    const net = netOf(r);
+    let diffHtml = "";
+    if (r.isWin) {
+      const cls = net > 0 ? "positive" : net < 0 ? "negative" : "";
+      const sign = net > 0 ? "+" : net < 0 ? "-" : "±";
+      diffHtml = `<span class="record-diff ${cls}">${sign}${fmtMoney(net)}</span>`;
+    }
+    const iconCls = r.isWin ? "win" : "lose";
+    const icon = r.isWin ? WIN_ICON : LOSE_ICON;
+    const cardHtml = showCard && r.cardNumber ? `<p class="record-card">刮刮樂卡片號 ${escapeHtml(r.cardNumber)}</p>` : "";
+    const deleteHtml = showDelete
+      ? `<button class="record-delete" data-id="${r.id}" aria-label="刪除紀錄"><svg viewBox="0 0 24 24" class="delete-icon"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`
+      : "";
+    return `
+      <li class="record-item"${editable ? ` data-id="${r.id}"` : ""}>
+        <div class="record-icon ${iconCls}">${icon}</div>
+        <div class="record-main">
+          <p class="record-price">${fmtMoney(r.price)}</p>
+          <p class="record-date">${fmtPurchaseDate(r.purchaseDate)}</p>
+          ${cardHtml}
+        </div>
+        ${diffHtml}
+        ${deleteHtml}
+      </li>
+    `;
+  }
+
   function openCardDetail(cardNumber) {
     const matches = records
       .filter((r) => r.cardNumber === cardNumber)
@@ -218,36 +255,22 @@
     document.getElementById("card-detail-title").textContent = `卡號 ${cardNumber}`;
     document.getElementById("card-detail-summary").textContent =
       `中獎 ${won} / 共 ${matches.length} 張，中獎率 ${Math.round((won / matches.length) * 100)}%`;
-
-    document.getElementById("card-detail-list").innerHTML = matches.map((r) => {
-      const net = netOf(r);
-      let diffHtml = "";
-      if (r.isWin) {
-        const cls = net > 0 ? "positive" : net < 0 ? "negative" : "";
-        const sign = net > 0 ? "+" : net < 0 ? "-" : "±";
-        diffHtml = `<span class="record-diff ${cls}">${sign}${fmtMoney(net)}</span>`;
-      }
-      const iconCls = r.isWin ? "win" : "lose";
-      const icon = r.isWin
-        ? '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-        : '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
-      return `
-        <li class="record-item">
-          <div class="record-icon ${iconCls}">${icon}</div>
-          <div class="record-main">
-            <p class="record-price">${fmtMoney(r.price)}</p>
-            <p class="record-date">${fmtPurchaseDate(r.purchaseDate)}</p>
-          </div>
-          ${diffHtml}
-        </li>
-      `;
-    }).join("");
-
+    document.getElementById("card-detail-list").innerHTML = matches.map((r) => recordItemHtml(r)).join("");
     document.getElementById("card-detail-overlay").classList.remove("hidden");
   }
 
   function closeCardDetail() {
     document.getElementById("card-detail-overlay").classList.add("hidden");
+  }
+
+  function openJackpotDetail() {
+    const wins = records.filter((r) => r.isWin).sort((a, b) => b.amount - a.amount);
+    document.getElementById("jackpot-detail-list").innerHTML = wins.map((r) => recordItemHtml(r, { showCard: true })).join("");
+    document.getElementById("jackpot-detail-overlay").classList.remove("hidden");
+  }
+
+  function closeJackpotDetail() {
+    document.getElementById("jackpot-detail-overlay").classList.add("hidden");
   }
 
   /* ---------- rendering: records ---------- */
@@ -266,34 +289,7 @@
     }
     empty.classList.add("hidden");
 
-    list.innerHTML = sorted.map((r) => {
-      const net = netOf(r);
-      let diffHtml = "";
-      if (r.isWin) {
-        const cls = net > 0 ? "positive" : net < 0 ? "negative" : "";
-        const sign = net > 0 ? "+" : net < 0 ? "-" : "±";
-        diffHtml = `<span class="record-diff ${cls}">${sign}${fmtMoney(net)}</span>`;
-      }
-      const iconCls = r.isWin ? "win" : "lose";
-      const icon = r.isWin
-        ? '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-        : '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
-      const cardHtml = r.cardNumber ? `<p class="record-card">刮刮樂卡片號 ${escapeHtml(r.cardNumber)}</p>` : "";
-      return `
-        <li class="record-item" data-id="${r.id}">
-          <div class="record-icon ${iconCls}">${icon}</div>
-          <div class="record-main">
-            <p class="record-price">${fmtMoney(r.price)}</p>
-            <p class="record-date">${fmtPurchaseDate(r.purchaseDate)}</p>
-            ${cardHtml}
-          </div>
-          ${diffHtml}
-          <button class="record-delete" data-id="${r.id}" aria-label="刪除紀錄">
-            <svg viewBox="0 0 24 24" class="delete-icon"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-        </li>
-      `;
-    }).join("");
+    list.innerHTML = sorted.map((r) => recordItemHtml(r, { showCard: true, showDelete: true, editable: true })).join("");
   }
 
   function escapeHtml(str) {
@@ -608,6 +604,12 @@
     const btn = e.target.closest(".card-stat-row");
     if (!btn) return;
     openCardDetail(btn.dataset.card);
+  });
+
+  document.getElementById("jackpot-viewall").addEventListener("click", openJackpotDetail);
+  document.getElementById("jackpot-detail-close").addEventListener("click", closeJackpotDetail);
+  document.getElementById("jackpot-detail-overlay").addEventListener("click", (e) => {
+    if (e.target.id === "jackpot-detail-overlay") closeJackpotDetail();
   });
 
   document.getElementById("card-stat-viewall").addEventListener("click", openAllCardsModal);

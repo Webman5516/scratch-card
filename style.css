@@ -166,6 +166,7 @@ html, body {
   color: var(--green);
 }
 .jackpot-amount .prefix { font-size: 20px; font-weight: 700; margin-right: 4px; }
+.jackpot-date { margin: 8px 0 0; font-size: 13px; color: var(--text-dim); }
 
 /* ---- card win-rate leaderboard ---- */
 .card-stat-card { border: 1.5px solid var(--red); }
@@ -197,6 +198,7 @@ html, body {
   justify-content: center;
   flex-shrink: 0;
 }
+.card-stat-rank.medal { background: none; font-size: 20px; }
 .card-stat-info { flex: 1; min-width: 0; }
 .card-stat-number { margin: 0; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-stat-ratio { margin: 2px 0 0; font-size: 12px; color: var(--text-dim); }
