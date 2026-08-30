@@ -168,6 +168,7 @@ html, body {
 .jackpot-amount .prefix { font-size: 20px; font-weight: 700; margin-right: 4px; }
 
 /* ---- card win-rate leaderboard ---- */
+.card-stat-card { border: 1.5px solid var(--red); }
 .card-stat-list { display: flex; flex-direction: column; gap: 4px; }
 .card-stat-row {
   display: flex;
