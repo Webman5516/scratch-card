@@ -86,12 +86,14 @@ html, body {
 .icon-btn {
   border: none;
   background: none;
-  font-size: 28px;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text);
   cursor: pointer;
   padding: 4px 8px;
 }
+.plus-icon { width: 26px; height: 26px; }
 
 .scroll-area {
   padding: 4px 16px 24px;
@@ -351,14 +353,12 @@ html, body {
 
 .nav-fab {
   background: var(--text);
-  color: #fff;
+  color: var(--bg);
   width: 48px;
   height: 48px;
   border-radius: 14px;
-  font-size: 26px;
-  font-weight: 400;
-  line-height: 1;
 }
+.nav-fab .plus-icon { width: 24px; height: 24px; }
 
 /* ---- modal ---- */
 .modal-overlay {

@@ -19,7 +19,7 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="style.css?v=20260830b">
+  <link rel="stylesheet" href="style.css?v=20260830c">
 </head>
 
 <body>
@@ -84,7 +84,9 @@
     <section class="view hidden" id="view-records">
       <header class="topbar">
         <h1 class="brand records-title">紀錄</h1>
-        <button class="icon-btn" id="btn-add-from-records" aria-label="新增紀錄">＋</button>
+        <button class="icon-btn" id="btn-add-from-records" aria-label="新增紀錄">
+          <svg viewBox="0 0 24 24" class="plus-icon"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
       </header>
       <div class="scroll-area">
         <ul class="record-list" id="record-list"></ul>
@@ -132,7 +134,9 @@
           <path d="M4 20V10M11 20V4M18 20v-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </button>
-      <button class="nav-btn nav-fab" id="btn-add-from-nav" aria-label="新增紀錄">＋</button>
+      <button class="nav-btn nav-fab" id="btn-add-from-nav" aria-label="新增紀錄">
+        <svg viewBox="0 0 24 24" class="plus-icon"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg>
+      </button>
       <button class="nav-btn" data-view="records" aria-label="紀錄">
         <svg viewBox="0 0 24 24" class="nav-icon">
           <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -245,7 +249,7 @@
 
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.5.1/chart.umd.min.js"></script>
-  <script src="app.js?v=20260830b"></script>
+  <script src="app.js?v=20260830c"></script>
 </body>
 
 </html>
