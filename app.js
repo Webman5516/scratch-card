@@ -1,18 +1,21 @@
 (() => {
   "use strict";
 
+  const API_BASE = "https://scratch-card-5cv.pages.dev";
   const STORAGE_KEY = "johunt_records_v1";
-  const BENTO_PRICE = 75; // NT$ per lunchbox, calibrated so -450 -> 6 bentos
-  const BURGER_LAYER_STEP = 100; // NT$ profit per burger layer
+  const USERNAME_KEY = "johunt_username";
+  const BENTO_PRICE = 75; // NT$ per lunchbox-turned-burger-king, calibrated so -450 -> 6
+  const BURGER_LAYER_STEP = 100; // NT$ profit per ice-cream scoop
   const BENTO_MAX_SHOW = 30;
   const BURGER_MAX_SHOW = 12;
 
   /* ---------- state ---------- */
-  let records = loadRecords();
-  let draft = { price: null, isWin: true, amount: "", cardNumber: "" };
+  let records = [];
+  let username = localStorage.getItem(USERNAME_KEY) || "";
+  let draft = { editingId: null, price: null, isWin: true, amount: "", cardNumber: "", purchaseDate: "" };
 
-  /* ---------- storage ---------- */
-  function loadRecords() {
+  /* ---------- local cache (fallback/offline) ---------- */
+  function loadLocalCache() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       return raw ? JSON.parse(raw) : [];
@@ -21,19 +24,74 @@
     }
   }
 
+  function saveLocalCache() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch {}
+  }
+
+  function normalizeRecord(r) {
+    return {
+      ...r,
+      purchaseDate: r.purchaseDate || (r.createdAt ? r.createdAt.slice(0, 10) : todayISODate()),
+    };
+  }
+
+  /* ---------- cloud sync ---------- */
+  async function fetchRemoteRecords(user) {
+    const res = await fetch(`${API_BASE}/api/records?user=${encodeURIComponent(user)}`);
+    if (!res.ok) throw new Error("fetch failed: " + res.status);
+    return res.json();
+  }
+
+  async function pushRemoteRecords(user, data) {
+    const res = await fetch(`${API_BASE}/api/records?user=${encodeURIComponent(user)}`, {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error("push failed: " + res.status);
+  }
+
   function saveRecords() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+    saveLocalCache();
+    if (!username) return;
+    pushRemoteRecords(username, records).catch((err) => {
+      console.error("雲端同步失敗，變更僅暫存在本機：", err);
+    });
+  }
+
+  async function loadForUser(user) {
+    records = loadLocalCache().map(normalizeRecord);
+    renderAll();
+    if (!user) return;
+    try {
+      const remote = await fetchRemoteRecords(user);
+      if (remote.length === 0 && records.length > 0) {
+        await pushRemoteRecords(user, records);
+      } else {
+        records = remote.map(normalizeRecord);
+        saveLocalCache();
+      }
+      renderAll();
+    } catch (err) {
+      console.error("讀取雲端資料失敗，改用本機備份：", err);
+    }
   }
 
   /* ---------- helpers ---------- */
+  function todayISODate() {
+    const d = new Date();
+    const pad = (x) => String(x).padStart(2, "0");
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
   function fmtMoney(n) {
     return "NT$ " + Math.abs(Math.round(n)).toLocaleString("en-US");
   }
 
-  function fmtDate(iso) {
-    const d = new Date(iso);
-    const pad = (x) => String(x).padStart(2, "0");
-    return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  function fmtPurchaseDate(dateStr) {
+    const [y, m, d] = (dateStr || "").split("-");
+    if (!y) return "";
+    return `${y}/${m}/${d}`;
   }
 
   function netOf(r) {
@@ -117,13 +175,18 @@
         <p class="jackpot-caption">尚未中獎，再刮一張試試手氣！</p>
       `;
     }
+
+    document.getElementById("user-badge-name").textContent = username || "設定使用者";
   }
 
   /* ---------- rendering: records ---------- */
   function renderRecords() {
     const list = document.getElementById("record-list");
     const empty = document.getElementById("records-empty");
-    const sorted = [...records].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const sorted = [...records].sort((a, b) => {
+      if (a.purchaseDate !== b.purchaseDate) return a.purchaseDate < b.purchaseDate ? 1 : -1;
+      return a.id < b.id ? 1 : -1;
+    });
 
     if (sorted.length === 0) {
       list.innerHTML = "";
@@ -144,11 +207,11 @@
       const icon = r.isWin ? "🪙" : "🎫";
       const cardHtml = r.cardNumber ? `<p class="record-card">刮刮樂卡片號 ${escapeHtml(r.cardNumber)}</p>` : "";
       return `
-        <li class="record-item">
+        <li class="record-item" data-id="${r.id}">
           <div class="record-icon ${iconCls}">${icon}</div>
           <div class="record-main">
             <p class="record-price">${fmtMoney(r.price)}</p>
-            <p class="record-date">${fmtDate(r.createdAt)}</p>
+            <p class="record-date">${fmtPurchaseDate(r.purchaseDate)}</p>
             ${cardHtml}
           </div>
           ${diffHtml}
@@ -186,19 +249,47 @@
     });
   }
 
-  /* ---------- modal ---------- */
+  /* ---------- record modal ---------- */
   function resetDraft() {
-    draft = { price: null, isWin: true, amount: "", cardNumber: "" };
+    draft = { editingId: null, price: null, isWin: true, amount: "", cardNumber: "", purchaseDate: todayISODate() };
+    document.getElementById("modal-title").textContent = "新紀錄";
     document.querySelectorAll(".price-btn").forEach((b) => b.classList.remove("active"));
     document.querySelectorAll(".segment").forEach((b) => b.classList.toggle("active", b.dataset.win === "true"));
     document.getElementById("amount-input").value = "";
     document.getElementById("ticket-code-input").value = "";
+    document.getElementById("purchase-date-input").value = draft.purchaseDate;
     document.getElementById("amount-field").classList.remove("hidden");
+    updateConfirmState();
+  }
+
+  function loadDraftFromRecord(r) {
+    draft = {
+      editingId: r.id,
+      price: r.price,
+      isWin: r.isWin,
+      amount: r.isWin ? String(r.amount) : "",
+      cardNumber: r.cardNumber || "",
+      purchaseDate: r.purchaseDate,
+    };
+    document.getElementById("modal-title").textContent = "編輯紀錄";
+    document.querySelectorAll(".price-btn").forEach((b) => b.classList.toggle("active", Number(b.dataset.price) === r.price));
+    document.querySelectorAll(".segment").forEach((b) => b.classList.toggle("active", (b.dataset.win === "true") === r.isWin));
+    document.getElementById("amount-input").value = r.isWin ? r.amount : "";
+    document.getElementById("ticket-code-input").value = r.cardNumber || "";
+    document.getElementById("purchase-date-input").value = r.purchaseDate;
+    document.getElementById("amount-field").classList.toggle("hidden", !r.isWin);
     updateConfirmState();
   }
 
   function openModal() {
     resetDraft();
+    document.getElementById("modal-overlay").classList.remove("hidden");
+  }
+
+  function openEditModal(id) {
+    const r = records.find((rec) => rec.id === id);
+    if (!r) return;
+    loadDraftFromRecord(r);
     document.getElementById("modal-overlay").classList.remove("hidden");
   }
 
@@ -210,23 +301,62 @@
     const btn = document.getElementById("btn-confirm");
     const priceOk = draft.price != null;
     const amountOk = !draft.isWin || (draft.amount !== "" && Number(draft.amount) >= 0);
-    btn.disabled = !(priceOk && amountOk);
+    const dateOk = !!draft.purchaseDate;
+    btn.disabled = !(priceOk && amountOk && dateOk);
   }
 
   function handleConfirm() {
     if (draft.price == null) return;
     const amount = draft.isWin ? Number(draft.amount || 0) : 0;
-    records.push({
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
-      price: draft.price,
-      isWin: draft.isWin,
-      amount,
-      cardNumber: draft.cardNumber.trim(),
-      createdAt: new Date().toISOString(),
-    });
+    if (draft.editingId) {
+      const r = records.find((rec) => rec.id === draft.editingId);
+      if (r) {
+        r.price = draft.price;
+        r.isWin = draft.isWin;
+        r.amount = amount;
+        r.cardNumber = draft.cardNumber.trim();
+        r.purchaseDate = draft.purchaseDate;
+      }
+    } else {
+      records.push({
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7),
+        price: draft.price,
+        isWin: draft.isWin,
+        amount,
+        cardNumber: draft.cardNumber.trim(),
+        purchaseDate: draft.purchaseDate,
+      });
+    }
     saveRecords();
     renderAll();
     closeModal();
+  }
+
+  /* ---------- username modal ---------- */
+  function openUserModal(forced) {
+    document.getElementById("username-input").value = username;
+    document.getElementById("user-btn-cancel").classList.toggle("hidden", forced);
+    document.getElementById("user-modal-hint").textContent = forced
+      ? "第一次使用，請先輸入使用者名稱，你的紀錄會儲存在雲端並跟這個名稱綁定"
+      : "輸入使用者名稱，你的紀錄會儲存在雲端並跟這個名稱綁定";
+    document.getElementById("user-modal-overlay").classList.remove("hidden");
+  }
+
+  function closeUserModal() {
+    document.getElementById("user-modal-overlay").classList.add("hidden");
+  }
+
+  async function handleUserConfirm() {
+    const value = document.getElementById("username-input").value.trim();
+    if (!value) return;
+    if (value === username) {
+      closeUserModal();
+      return;
+    }
+    username = value;
+    localStorage.setItem(USERNAME_KEY, username);
+    closeUserModal();
+    await loadForUser(username);
   }
 
   /* ---------- wire up ---------- */
@@ -269,15 +399,38 @@
     draft.cardNumber = e.target.value;
   });
 
+  document.getElementById("purchase-date-input").addEventListener("input", (e) => {
+    draft.purchaseDate = e.target.value;
+    updateConfirmState();
+  });
+
   document.getElementById("record-list").addEventListener("click", (e) => {
-    const btn = e.target.closest(".record-delete");
-    if (!btn) return;
-    if (confirm("確定要刪除這筆紀錄嗎？")) {
-      deleteRecord(btn.dataset.id);
+    const deleteBtn = e.target.closest(".record-delete");
+    if (deleteBtn) {
+      if (confirm("確定要刪除這筆紀錄嗎？")) {
+        deleteRecord(deleteBtn.dataset.id);
+      }
+      return;
     }
+    const item = e.target.closest(".record-item");
+    if (item) openEditModal(item.dataset.id);
+  });
+
+  document.getElementById("user-badge").addEventListener("click", () => openUserModal(false));
+  document.getElementById("user-btn-cancel").addEventListener("click", closeUserModal);
+  document.getElementById("user-btn-confirm").addEventListener("click", handleUserConfirm);
+  document.getElementById("user-modal-overlay").addEventListener("click", (e) => {
+    if (e.target.id === "user-modal-overlay" && !username) return;
+    if (e.target.id === "user-modal-overlay") closeUserModal();
   });
 
   /* ---------- init ---------- */
-  renderAll();
   showView("home");
+  if (username) {
+    loadForUser(username);
+  } else {
+    records = loadLocalCache().map(normalizeRecord);
+    renderAll();
+    openUserModal(true);
+  }
 })();

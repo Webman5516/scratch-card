@@ -65,6 +65,24 @@ html, body {
 
 .rocket { font-size: 24px; }
 
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+}
+.user-badge::before {
+  content: "👤";
+  font-size: 13px;
+}
+
 .icon-btn {
   border: none;
   background: none;
@@ -333,6 +351,7 @@ html, body {
 }
 .modal-confirm { color: var(--text); font-weight: 700; }
 .modal-confirm:disabled { color: #c7c7cc; cursor: default; }
+.modal-text-btn.hidden { display: none; }
 
 .modal-body { padding: 20px 20px 32px; }
 
@@ -422,6 +441,28 @@ html, body {
 }
 #ticket-code-input::placeholder { color: #c7c7cc; font-weight: 400; }
 
+#purchase-date-input {
+  border: none;
+  outline: none;
+  font-size: 17px;
+  font-weight: 700;
+  flex: 1;
+  width: 100%;
+  font-family: inherit;
+  color: #007aff;
+}
+
+#username-input {
+  border: none;
+  outline: none;
+  font-size: 17px;
+  flex: 1;
+  width: 100%;
+  font-family: inherit;
+  color: var(--text);
+}
+#username-input::placeholder { color: #c7c7cc; }
+
 @media (prefers-color-scheme: dark) {
   html, body { background: #000; }
   :root {
@@ -440,4 +481,6 @@ html, body {
   .segment.active { background: #3a3a3c; color: #fff; }
   #amount-input { color: #0a84ff; caret-color: #0a84ff; }
   #ticket-code-input { color: #0a84ff; caret-color: #0a84ff; }
+  #purchase-date-input { color: #0a84ff; color-scheme: dark; }
+  #username-input { color: var(--text); }
 }

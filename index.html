@@ -15,7 +15,9 @@
     <section class="view" id="view-home">
       <header class="topbar">
         <h1 class="brand">刮刮樂記帳</h1>
-
+        <button class="user-badge" id="user-badge" aria-label="切換使用者">
+          <span id="user-badge-name">使用者</span>
+        </button>
       </header>
 
       <div class="scroll-area">
@@ -97,7 +99,7 @@
       <div class="modal-sheet">
         <header class="modal-header">
           <button class="modal-text-btn" id="btn-cancel">取消</button>
-          <h2 class="modal-title">新紀錄</h2>
+          <h2 class="modal-title" id="modal-title">新紀錄</h2>
           <button class="modal-text-btn modal-confirm" id="btn-confirm">完成</button>
         </header>
 
@@ -110,6 +112,11 @@
             <button class="price-btn" data-price="500">500 元</button>
             <button class="price-btn" data-price="1000">1000 元</button>
             <button class="price-btn" data-price="2000">2000 元</button>
+          </div>
+
+          <p class="section-label">購買日</p>
+          <div class="amount-field">
+            <input type="date" id="purchase-date-input">
           </div>
 
           <p class="section-label">刮中金額</p>
@@ -126,6 +133,23 @@
           <p class="section-label">刮刮樂卡片號</p>
           <div class="amount-field">
             <input type="text" id="ticket-code-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="請輸入刮刮樂卡片號（選填）">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ USERNAME MODAL ============ -->
+    <div class="modal-overlay hidden" id="user-modal-overlay">
+      <div class="modal-sheet">
+        <header class="modal-header">
+          <button class="modal-text-btn hidden" id="user-btn-cancel">取消</button>
+          <h2 class="modal-title">使用者</h2>
+          <button class="modal-text-btn modal-confirm" id="user-btn-confirm">確定</button>
+        </header>
+        <div class="modal-body">
+          <p class="section-label" id="user-modal-hint">輸入使用者名稱，你的紀錄會儲存在雲端並跟這個名稱綁定</p>
+          <div class="amount-field">
+            <input type="text" id="username-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="請輸入使用者名稱">
           </div>
         </div>
       </div>
