@@ -450,10 +450,12 @@ html, body {
   border: none;
   outline: none;
   font-size: 17px;
+  font-weight: 700;
   flex: 1;
   width: 100%;
   font-family: inherit;
-  color: var(--text);
+  color: #007aff;
+  caret-color: #007aff;
 }
 #username-input::placeholder { color: #c7c7cc; }
 
@@ -476,7 +478,7 @@ html, body {
   #amount-input { color: #0a84ff; caret-color: #0a84ff; }
   #ticket-code-input { color: #0a84ff; caret-color: #0a84ff; }
   #purchase-date-input { color: #0a84ff; color-scheme: dark; }
-  #username-input { color: var(--text); }
+  #username-input { color: #0a84ff; caret-color: #0a84ff; }
   .dot-invested { background: #3987e5; }
   .dot-won { background: #d95926; }
 }
