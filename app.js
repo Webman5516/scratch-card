@@ -163,7 +163,7 @@
     return [...map.entries()]
       .map(([card, s]) => ({ card, total: s.total, won: s.won, rate: s.won / s.total }))
       .sort((a, b) => b.rate - a.rate || b.total - a.total)
-      .slice(0, 5);
+      .slice(0, 3);
   }
 
   function renderCardStats() {
