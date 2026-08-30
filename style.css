@@ -398,19 +398,21 @@ html, body {
 #amount-input {
   border: none;
   outline: none;
-  font-size: 17px;
+  font-size: 24px;
+  font-weight: 700;
   flex: 1;
   text-align: right;
   font-family: inherit;
   color: #007aff;
   caret-color: #007aff;
 }
-#amount-input::placeholder { color: #c7c7cc; }
+#amount-input::placeholder { color: #c7c7cc; font-weight: 400; }
 
 #ticket-code-input {
   border: none;
   outline: none;
-  font-size: 17px;
+  font-size: 24px;
+  font-weight: 700;
   flex: 1;
   text-align: left;
   font-family: inherit;
@@ -418,7 +420,7 @@ html, body {
   caret-color: #007aff;
   width: 100%;
 }
-#ticket-code-input::placeholder { color: #c7c7cc; }
+#ticket-code-input::placeholder { color: #c7c7cc; font-weight: 400; }
 
 @media (prefers-color-scheme: dark) {
   html, body { background: #000; }
