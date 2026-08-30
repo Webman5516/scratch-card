@@ -193,7 +193,7 @@
     document.querySelectorAll(".price-btn").forEach((b) => b.classList.remove("active"));
     document.querySelectorAll(".segment").forEach((b) => b.classList.toggle("active", b.dataset.win === "true"));
     document.getElementById("amount-input").value = "";
-    document.getElementById("card-number-input").value = "";
+    document.getElementById("ticket-code-input").value = "";
     document.getElementById("amount-field").classList.remove("hidden");
     updateConfirmState();
   }
@@ -266,7 +266,7 @@
     updateConfirmState();
   });
 
-  document.getElementById("card-number-input").addEventListener("input", (e) => {
+  document.getElementById("ticket-code-input").addEventListener("input", (e) => {
     draft.cardNumber = e.target.value;
   });
 

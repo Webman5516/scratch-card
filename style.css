@@ -407,7 +407,7 @@ html, body {
 }
 #amount-input::placeholder { color: #c7c7cc; }
 
-#card-number-input {
+#ticket-code-input {
   border: none;
   outline: none;
   font-size: 17px;
@@ -418,7 +418,7 @@ html, body {
   caret-color: #007aff;
   width: 100%;
 }
-#card-number-input::placeholder { color: #c7c7cc; }
+#ticket-code-input::placeholder { color: #c7c7cc; }
 
 @media (prefers-color-scheme: dark) {
   html, body { background: #000; }
@@ -437,5 +437,5 @@ html, body {
   .price-btn.active { background: #f5f5f5; color: #000; border-color: #f5f5f5; }
   .segment.active { background: #3a3a3c; color: #fff; }
   #amount-input { color: #0a84ff; caret-color: #0a84ff; }
-  #card-number-input { color: #0a84ff; caret-color: #0a84ff; }
+  #ticket-code-input { color: #0a84ff; caret-color: #0a84ff; }
 }
