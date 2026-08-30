@@ -167,6 +167,44 @@ html, body {
 }
 .jackpot-amount .prefix { font-size: 20px; font-weight: 700; margin-right: 4px; }
 
+/* ---- card win-rate leaderboard ---- */
+.card-stat-list { display: flex; flex-direction: column; gap: 4px; }
+.card-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+}
+.card-stat-row:hover { background: var(--gray-bg); }
+.card-stat-rank {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gray-bg);
+  color: var(--text-dim);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-stat-info { flex: 1; min-width: 0; }
+.card-stat-number { margin: 0; font-size: 15px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-stat-ratio { margin: 2px 0 0; font-size: 12px; color: var(--text-dim); }
+.card-stat-percent { font-size: 16px; font-weight: 800; color: var(--green); flex-shrink: 0; }
+.card-stat-percent.zero { color: var(--text-dim); }
+.card-stat-chevron { width: 16px; height: 16px; color: var(--text-dim); flex-shrink: 0; }
+
+.card-detail-summary { margin: 0 0 16px; font-size: 14px; color: var(--text-dim); }
+
 /* ---- analytics ---- */
 #period-toggle { margin: 0 0 4px; }
 

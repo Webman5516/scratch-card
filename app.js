@@ -146,6 +146,93 @@
     }
 
     document.getElementById("user-badge-name").textContent = username || "設定使用者";
+
+    renderCardStats();
+  }
+
+  /* ---------- rendering: card win-rate leaderboard ---------- */
+  function computeCardStats() {
+    const map = new Map();
+    for (const r of records) {
+      if (!r.cardNumber) continue;
+      if (!map.has(r.cardNumber)) map.set(r.cardNumber, { total: 0, won: 0 });
+      const entry = map.get(r.cardNumber);
+      entry.total += 1;
+      if (r.isWin) entry.won += 1;
+    }
+    return [...map.entries()]
+      .map(([card, s]) => ({ card, total: s.total, won: s.won, rate: s.won / s.total }))
+      .sort((a, b) => b.rate - a.rate || b.total - a.total)
+      .slice(0, 5);
+  }
+
+  function renderCardStats() {
+    const list = document.getElementById("card-stat-list");
+    const empty = document.getElementById("card-stat-empty");
+    const stats = computeCardStats();
+
+    if (stats.length === 0) {
+      list.innerHTML = "";
+      empty.classList.remove("hidden");
+      return;
+    }
+    empty.classList.add("hidden");
+
+    list.innerHTML = stats.map((s, i) => {
+      const pct = Math.round(s.rate * 100);
+      return `
+        <button class="card-stat-row" data-card="${escapeHtml(s.card)}">
+          <span class="card-stat-rank">${i + 1}</span>
+          <div class="card-stat-info">
+            <p class="card-stat-number">${escapeHtml(s.card)}</p>
+            <p class="card-stat-ratio">${s.won} / ${s.total} 張</p>
+          </div>
+          <span class="card-stat-percent ${pct === 0 ? "zero" : ""}">${pct}%</span>
+          <svg viewBox="0 0 24 24" class="card-stat-chevron"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      `;
+    }).join("");
+  }
+
+  function openCardDetail(cardNumber) {
+    const matches = records
+      .filter((r) => r.cardNumber === cardNumber)
+      .sort((a, b) => (a.purchaseDate < b.purchaseDate ? 1 : -1));
+    const won = matches.filter((r) => r.isWin).length;
+
+    document.getElementById("card-detail-title").textContent = `卡號 ${cardNumber}`;
+    document.getElementById("card-detail-summary").textContent =
+      `中獎 ${won} / 共 ${matches.length} 張，中獎率 ${Math.round((won / matches.length) * 100)}%`;
+
+    document.getElementById("card-detail-list").innerHTML = matches.map((r) => {
+      const net = netOf(r);
+      let diffHtml = "";
+      if (r.isWin) {
+        const cls = net > 0 ? "positive" : net < 0 ? "negative" : "";
+        const sign = net > 0 ? "+" : net < 0 ? "-" : "±";
+        diffHtml = `<span class="record-diff ${cls}">${sign}${fmtMoney(net)}</span>`;
+      }
+      const iconCls = r.isWin ? "win" : "lose";
+      const icon = r.isWin
+        ? '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        : '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
+      return `
+        <li class="record-item">
+          <div class="record-icon ${iconCls}">${icon}</div>
+          <div class="record-main">
+            <p class="record-price">${fmtMoney(r.price)}</p>
+            <p class="record-date">${fmtPurchaseDate(r.purchaseDate)}</p>
+          </div>
+          ${diffHtml}
+        </li>
+      `;
+    }).join("");
+
+    document.getElementById("card-detail-overlay").classList.remove("hidden");
+  }
+
+  function closeCardDetail() {
+    document.getElementById("card-detail-overlay").classList.add("hidden");
   }
 
   /* ---------- rendering: records ---------- */
@@ -500,6 +587,17 @@
     analyticsPeriod = btn.dataset.period;
     document.querySelectorAll("#period-toggle .segment").forEach((b) => b.classList.toggle("active", b === btn));
     renderAnalyticsChart();
+  });
+
+  document.getElementById("card-stat-list").addEventListener("click", (e) => {
+    const btn = e.target.closest(".card-stat-row");
+    if (!btn) return;
+    openCardDetail(btn.dataset.card);
+  });
+
+  document.getElementById("card-detail-close").addEventListener("click", closeCardDetail);
+  document.getElementById("card-detail-overlay").addEventListener("click", (e) => {
+    if (e.target.id === "card-detail-overlay") closeCardDetail();
   });
 
   document.getElementById("user-badge").addEventListener("click", () => openUserModal(false));

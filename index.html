@@ -52,6 +52,12 @@
             <p class="jackpot-caption">尚未中獎，再刮一張試試手氣！</p>
           </div>
         </div>
+
+        <div class="card">
+          <p class="card-label">卡號中獎率 Top 5</p>
+          <div class="card-stat-list" id="card-stat-list"></div>
+          <p class="empty-state hidden" id="card-stat-empty">填寫卡號後，這裡會顯示卡號中獎排行</p>
+        </div>
       </div>
     </section>
 
@@ -157,6 +163,20 @@
           <div class="amount-field">
             <input type="text" id="ticket-code-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="請輸入刮刮樂卡片號（選填）">
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ CARD DETAIL MODAL ============ -->
+    <div class="modal-overlay hidden" id="card-detail-overlay">
+      <div class="modal-sheet">
+        <header class="modal-header">
+          <h2 class="modal-title" id="card-detail-title">卡號明細</h2>
+          <button class="modal-text-btn modal-confirm" id="card-detail-close">關閉</button>
+        </header>
+        <div class="modal-body">
+          <p class="card-detail-summary" id="card-detail-summary"></p>
+          <ul class="record-list" id="card-detail-list"></ul>
         </div>
       </div>
     </div>
