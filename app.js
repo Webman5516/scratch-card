@@ -465,7 +465,9 @@
   });
 
   document.getElementById("amount-input").addEventListener("input", (e) => {
-    draft.amount = e.target.value;
+    const digitsOnly = e.target.value.replace(/[^0-9]/g, "");
+    if (digitsOnly !== e.target.value) e.target.value = digitsOnly;
+    draft.amount = digitsOnly;
     updateConfirmState();
   });
 
