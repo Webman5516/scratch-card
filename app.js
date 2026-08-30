@@ -162,23 +162,11 @@
     }
     return [...map.entries()]
       .map(([card, s]) => ({ card, total: s.total, won: s.won, rate: s.won / s.total }))
-      .sort((a, b) => b.rate - a.rate || b.total - a.total)
-      .slice(0, 3);
+      .sort((a, b) => b.rate - a.rate || b.total - a.total);
   }
 
-  function renderCardStats() {
-    const list = document.getElementById("card-stat-list");
-    const empty = document.getElementById("card-stat-empty");
-    const stats = computeCardStats();
-
-    if (stats.length === 0) {
-      list.innerHTML = "";
-      empty.classList.remove("hidden");
-      return;
-    }
-    empty.classList.add("hidden");
-
-    list.innerHTML = stats.map((s, i) => {
+  function cardStatRowsHtml(stats) {
+    return stats.map((s, i) => {
       const pct = Math.round(s.rate * 100);
       return `
         <button class="card-stat-row" data-card="${escapeHtml(s.card)}">
@@ -192,6 +180,33 @@
         </button>
       `;
     }).join("");
+  }
+
+  function renderCardStats() {
+    const list = document.getElementById("card-stat-list");
+    const empty = document.getElementById("card-stat-empty");
+    const viewAllBtn = document.getElementById("card-stat-viewall");
+    const allStats = computeCardStats();
+    const top3 = allStats.slice(0, 3);
+
+    if (top3.length === 0) {
+      list.innerHTML = "";
+      empty.classList.remove("hidden");
+      viewAllBtn.classList.add("hidden");
+      return;
+    }
+    empty.classList.add("hidden");
+    list.innerHTML = cardStatRowsHtml(top3);
+    viewAllBtn.classList.toggle("hidden", allStats.length <= 3);
+  }
+
+  function openAllCardsModal() {
+    document.getElementById("all-cards-list").innerHTML = cardStatRowsHtml(computeCardStats());
+    document.getElementById("all-cards-overlay").classList.remove("hidden");
+  }
+
+  function closeAllCardsModal() {
+    document.getElementById("all-cards-overlay").classList.add("hidden");
   }
 
   function openCardDetail(cardNumber) {
@@ -590,6 +605,17 @@
   });
 
   document.getElementById("card-stat-list").addEventListener("click", (e) => {
+    const btn = e.target.closest(".card-stat-row");
+    if (!btn) return;
+    openCardDetail(btn.dataset.card);
+  });
+
+  document.getElementById("card-stat-viewall").addEventListener("click", openAllCardsModal);
+  document.getElementById("all-cards-close").addEventListener("click", closeAllCardsModal);
+  document.getElementById("all-cards-overlay").addEventListener("click", (e) => {
+    if (e.target.id === "all-cards-overlay") closeAllCardsModal();
+  });
+  document.getElementById("all-cards-list").addEventListener("click", (e) => {
     const btn = e.target.closest(".card-stat-row");
     if (!btn) return;
     openCardDetail(btn.dataset.card);

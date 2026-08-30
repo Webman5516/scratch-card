@@ -50,6 +50,7 @@
           <p class="card-label">卡號中獎率 Top 3</p>
           <div class="card-stat-list" id="card-stat-list"></div>
           <p class="empty-state hidden" id="card-stat-empty">填寫卡號後，這裡會顯示卡號中獎排行</p>
+          <button class="card-stat-viewall hidden" id="card-stat-viewall">查看全部卡號 →</button>
         </div>
 
         <div class="card jackpot-card" id="jackpot-card">
@@ -164,6 +165,19 @@
           <div class="amount-field">
             <input type="text" id="ticket-code-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="請輸入刮刮樂卡片號（選填）">
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ALL CARDS MODAL ============ -->
+    <div class="modal-overlay hidden" id="all-cards-overlay">
+      <div class="modal-sheet">
+        <header class="modal-header">
+          <h2 class="modal-title">所有卡號</h2>
+          <button class="modal-text-btn modal-confirm" id="all-cards-close">關閉</button>
+        </header>
+        <div class="modal-body">
+          <div class="card-stat-list" id="all-cards-list"></div>
         </div>
       </div>
     </div>

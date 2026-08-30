@@ -204,6 +204,22 @@ html, body {
 .card-stat-percent.zero { color: var(--text-dim); }
 .card-stat-chevron { width: 16px; height: 16px; color: var(--text-dim); flex-shrink: 0; }
 
+.card-stat-viewall {
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 0 0;
+  border: none;
+  border-top: 1px solid var(--border);
+  background: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-align: center;
+}
+.card-stat-viewall.hidden { display: none; }
+
 .card-detail-summary { margin: 0 0 16px; font-size: 14px; color: var(--text-dim); }
 
 /* ---- analytics ---- */
