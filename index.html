@@ -1,120 +1,138 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Jerry｜刮刮樂記帳</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Jerry｜刮刮樂記帳</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="app">
+  <div class="app">
 
-  <!-- ============ HOME ============ -->
-  <section class="view" id="view-home">
-    <header class="topbar">
-      <h1 class="brand">Jerry</h1>
-      <span class="rocket" aria-hidden="true">🚀</span>
-    </header>
+    <!-- ============ HOME ============ -->
+    <section class="view" id="view-home">
+      <header class="topbar">
+        <h1 class="brand">Jerry</h1>
 
-    <div class="scroll-area">
-      <div class="card">
-        <p class="card-label">累計損益</p>
-        <p class="pl-figure" id="home-pl">NT$ 0</p>
-        <p class="fun-line" id="home-bento-line">還沒有任何紀錄，快去刮一張！</p>
-        <div class="bento-row" id="home-bento-row"></div>
-      </div>
-
-      <div class="card">
-        <p class="card-label">投資報酬率 (ROI)</p>
-        <p class="roi-figure" id="home-roi">0.0<span class="roi-pct">%</span></p>
-        <div class="stat-grid">
-          <div class="stat-cell">
-            <p class="stat-label">總投入</p>
-            <p class="stat-value" id="home-invested">NT$ 0</p>
-          </div>
-          <div class="stat-cell">
-            <p class="stat-label">總損益</p>
-            <p class="stat-value" id="home-net">NT$ 0</p>
-          </div>
-          <div class="stat-cell">
-            <p class="stat-label">累計張數</p>
-            <p class="stat-value" id="home-count">0 張</p>
-          </div>
-        </div>
-        <div class="burger-box">
-          <p id="burger-line">你的漢堡肉堆疊了 0 層，肉呢？快去賺一層！</p>
-          <div class="burger-stack" id="burger-stack"></div>
-        </div>
-      </div>
-
-      <div class="card jackpot-card" id="jackpot-card">
-        <p class="card-label">刮刮樂大獎</p>
-        <div id="jackpot-body" class="jackpot-empty">
-          <p class="jackpot-emoji">🤞</p>
-          <p class="jackpot-caption">尚未中獎，再刮一張試試手氣！</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ RECORDS ============ -->
-  <section class="view hidden" id="view-records">
-    <header class="topbar">
-      <h1 class="brand records-title">紀錄</h1>
-      <button class="icon-btn" id="btn-add-from-records" aria-label="新增紀錄">＋</button>
-    </header>
-    <div class="scroll-area">
-      <ul class="record-list" id="record-list"></ul>
-      <p class="empty-state hidden" id="records-empty">目前還沒有任何紀錄</p>
-    </div>
-  </section>
-
-  <!-- ============ BOTTOM NAV ============ -->
-  <nav class="bottom-nav">
-    <button class="nav-btn active" data-view="home" aria-label="首頁">
-      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-    </button>
-    <button class="nav-btn nav-fab" id="btn-add-from-nav" aria-label="新增紀錄">＋</button>
-    <button class="nav-btn" data-view="records" aria-label="紀錄">
-      <svg viewBox="0 0 24 24" class="nav-icon"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    </button>
-  </nav>
-
-  <!-- ============ ADD RECORD MODAL ============ -->
-  <div class="modal-overlay hidden" id="modal-overlay">
-    <div class="modal-sheet">
-      <header class="modal-header">
-        <button class="modal-text-btn" id="btn-cancel">取消</button>
-        <h2 class="modal-title">新紀錄</h2>
-        <button class="modal-text-btn modal-confirm" id="btn-confirm">完成</button>
       </header>
 
-      <div class="modal-body">
-        <p class="section-label">刮刮樂售價</p>
-        <div class="price-grid" id="price-grid">
-          <button class="price-btn" data-price="100">100 元</button>
-          <button class="price-btn" data-price="200">200 元</button>
-          <button class="price-btn" data-price="300">300 元</button>
-          <button class="price-btn" data-price="500">500 元</button>
-          <button class="price-btn" data-price="1000">1000 元</button>
-          <button class="price-btn" data-price="2000">2000 元</button>
+      <div class="scroll-area">
+        <div class="card">
+          <p class="card-label">累計損益</p>
+          <p class="pl-figure" id="home-pl">NT$ 0</p>
+          <p class="fun-line" id="home-bento-line">還沒有任何紀錄，快去刮一張！</p>
+          <div class="bento-row" id="home-bento-row"></div>
         </div>
 
-        <p class="section-label">刮中金額</p>
-        <div class="segmented" id="win-toggle">
-          <button class="segment active" data-win="true">中獎</button>
-          <button class="segment" data-win="false">未中獎</button>
+        <div class="card">
+          <p class="card-label">投資報酬率 (ROI)</p>
+          <p class="roi-figure" id="home-roi">0.0<span class="roi-pct">%</span></p>
+          <div class="stat-grid">
+            <div class="stat-cell">
+              <p class="stat-label">總投入</p>
+              <p class="stat-value" id="home-invested">NT$ 0</p>
+            </div>
+            <div class="stat-cell">
+              <p class="stat-label">總損益</p>
+              <p class="stat-value" id="home-net">NT$ 0</p>
+            </div>
+            <div class="stat-cell">
+              <p class="stat-label">累計張數</p>
+              <p class="stat-value" id="home-count">0 張</p>
+            </div>
+          </div>
+          <div class="burger-box">
+            <p id="burger-line">你的漢堡肉堆疊了 0 層，肉呢？快去賺一層！</p>
+            <div class="burger-stack" id="burger-stack"></div>
+          </div>
         </div>
 
-        <div class="amount-field" id="amount-field">
-          <span class="amount-prefix">NT$</span>
-          <input type="number" inputmode="numeric" id="amount-input" placeholder="請輸入金額" min="0">
+        <div class="card jackpot-card" id="jackpot-card">
+          <p class="card-label">刮刮樂大獎</p>
+          <div id="jackpot-body" class="jackpot-empty">
+            <p class="jackpot-emoji">🤞</p>
+            <p class="jackpot-caption">尚未中獎，再刮一張試試手氣！</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RECORDS ============ -->
+    <section class="view hidden" id="view-records">
+      <header class="topbar">
+        <h1 class="brand records-title">紀錄</h1>
+        <button class="icon-btn" id="btn-add-from-records" aria-label="新增紀錄">＋</button>
+      </header>
+      <div class="scroll-area">
+        <ul class="record-list" id="record-list"></ul>
+        <p class="empty-state hidden" id="records-empty">目前還沒有任何紀錄</p>
+      </div>
+    </section>
+
+    <!-- ============ BOTTOM NAV ============ -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" data-view="home" aria-label="首頁">
+        <svg viewBox="0 0 24 24" class="nav-icon">
+          <path d="M3 11.5 12 4l9 7.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <path
+            d="M5.5 10v9a1 1 0 0 0 1 1H9a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h2.5a1 1 0 0 0 1-1v-9"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </svg>
+      </button>
+      <button class="nav-btn nav-fab" id="btn-add-from-nav" aria-label="新增紀錄">＋</button>
+      <button class="nav-btn" data-view="records" aria-label="紀錄">
+        <svg viewBox="0 0 24 24" class="nav-icon">
+          <path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z" fill="none" stroke="currentColor" stroke-width="1.8"
+            stroke-linejoin="round" />
+          <path d="M9 8h6M9 12h6M9 16h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </button>
+    </nav>
+
+    <!-- ============ ADD RECORD MODAL ============ -->
+    <div class="modal-overlay hidden" id="modal-overlay">
+      <div class="modal-sheet">
+        <header class="modal-header">
+          <button class="modal-text-btn" id="btn-cancel">取消</button>
+          <h2 class="modal-title">新紀錄</h2>
+          <button class="modal-text-btn modal-confirm" id="btn-confirm">完成</button>
+        </header>
+
+        <div class="modal-body">
+          <p class="section-label">刮刮樂售價</p>
+          <div class="price-grid" id="price-grid">
+            <button class="price-btn" data-price="100">100 元</button>
+            <button class="price-btn" data-price="200">200 元</button>
+            <button class="price-btn" data-price="300">300 元</button>
+            <button class="price-btn" data-price="500">500 元</button>
+            <button class="price-btn" data-price="1000">1000 元</button>
+            <button class="price-btn" data-price="2000">2000 元</button>
+          </div>
+
+          <p class="section-label">卡號</p>
+          <div class="amount-field">
+            <input type="text" inputmode="numeric" id="card-number-input" placeholder="請輸入卡號（選填）">
+          </div>
+
+          <p class="section-label">刮中金額</p>
+          <div class="segmented" id="win-toggle">
+            <button class="segment active" data-win="true">中獎</button>
+            <button class="segment" data-win="false">未中獎</button>
+          </div>
+
+          <div class="amount-field" id="amount-field">
+            <span class="amount-prefix">NT$</span>
+            <input type="number" inputmode="numeric" id="amount-input" placeholder="請輸入金額" min="0">
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-</div>
-<script src="app.js"></script>
+  </div>
+  <script src="app.js"></script>
 </body>
+
 </html>

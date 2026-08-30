@@ -9,7 +9,7 @@
 
   /* ---------- state ---------- */
   let records = loadRecords();
-  let draft = { price: null, isWin: true, amount: "" };
+  let draft = { price: null, isWin: true, amount: "", cardNumber: "" };
 
   /* ---------- storage ---------- */
   function loadRecords() {
@@ -143,17 +143,34 @@
       }
       const iconCls = r.isWin ? "win" : "lose";
       const icon = r.isWin ? "🪙" : "🎫";
+      const cardHtml = r.cardNumber ? `<p class="record-card">卡號 ${escapeHtml(r.cardNumber)}</p>` : "";
       return `
         <li class="record-item">
           <div class="record-icon ${iconCls}">${icon}</div>
           <div class="record-main">
             <p class="record-price">${fmtMoney(r.price)}</p>
             <p class="record-date">${fmtDate(r.createdAt)}</p>
+            ${cardHtml}
           </div>
           ${diffHtml}
+          <button class="record-delete" data-id="${r.id}" aria-label="刪除紀錄">
+            <svg viewBox="0 0 24 24" class="delete-icon"><path d="M4 7h16M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m2 0-1 13a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1L6 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
         </li>
       `;
     }).join("");
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function deleteRecord(id) {
+    records = records.filter((r) => r.id !== id);
+    saveRecords();
+    renderAll();
   }
 
   function renderAll() {
@@ -172,10 +189,11 @@
 
   /* ---------- modal ---------- */
   function resetDraft() {
-    draft = { price: null, isWin: true, amount: "" };
+    draft = { price: null, isWin: true, amount: "", cardNumber: "" };
     document.querySelectorAll(".price-btn").forEach((b) => b.classList.remove("active"));
     document.querySelectorAll(".segment").forEach((b) => b.classList.toggle("active", b.dataset.win === "true"));
     document.getElementById("amount-input").value = "";
+    document.getElementById("card-number-input").value = "";
     document.getElementById("amount-field").classList.remove("hidden");
     updateConfirmState();
   }
@@ -204,6 +222,7 @@
       price: draft.price,
       isWin: draft.isWin,
       amount,
+      cardNumber: draft.cardNumber.trim(),
       createdAt: new Date().toISOString(),
     });
     saveRecords();
@@ -245,6 +264,18 @@
   document.getElementById("amount-input").addEventListener("input", (e) => {
     draft.amount = e.target.value;
     updateConfirmState();
+  });
+
+  document.getElementById("card-number-input").addEventListener("input", (e) => {
+    draft.cardNumber = e.target.value;
+  });
+
+  document.getElementById("record-list").addEventListener("click", (e) => {
+    const btn = e.target.closest(".record-delete");
+    if (!btn) return;
+    if (confirm("確定要刪除這筆紀錄嗎？")) {
+      deleteRecord(btn.dataset.id);
+    }
   });
 
   /* ---------- init ---------- */

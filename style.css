@@ -218,10 +218,27 @@ html, body {
 .record-main { flex: 1; min-width: 0; }
 .record-price { margin: 0; font-size: 18px; font-weight: 800; }
 .record-date { margin: 2px 0 0; font-size: 13px; color: var(--text-dim); }
+.record-card { margin: 2px 0 0; font-size: 12px; color: var(--text-dim); }
 
 .record-diff { font-size: 15px; font-weight: 700; color: var(--text-dim); white-space: nowrap; }
 .record-diff.positive { color: var(--green); }
 .record-diff.negative { color: var(--red); }
+
+.record-delete {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+.record-delete:hover { color: var(--red); background: var(--gray-bg); }
+.delete-icon { width: 18px; height: 18px; }
 
 .empty-state {
   text-align: center;
@@ -389,6 +406,18 @@ html, body {
 }
 #amount-input::placeholder { color: #c7c7cc; }
 
+#card-number-input {
+  border: none;
+  outline: none;
+  font-size: 17px;
+  flex: 1;
+  text-align: left;
+  font-family: inherit;
+  color: var(--text);
+  width: 100%;
+}
+#card-number-input::placeholder { color: #c7c7cc; }
+
 @media (prefers-color-scheme: dark) {
   html, body { background: #000; }
   :root {
@@ -406,4 +435,5 @@ html, body {
   .price-btn.active { background: #f5f5f5; color: #000; border-color: #f5f5f5; }
   .segment.active { background: #3a3a3c; color: #fff; }
   #amount-input { color: var(--text); }
+  #card-number-input { color: var(--text); }
 }
