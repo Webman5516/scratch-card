@@ -224,8 +224,9 @@ html, body {
   font-size: 22px;
   flex-shrink: 0;
 }
-.record-icon.win { background: var(--green-bg); }
-.record-icon.lose { background: var(--gray-bg); }
+.record-icon.win { background: var(--green-bg); color: var(--green); }
+.record-icon.lose { background: var(--gray-bg); color: var(--text-dim); }
+.record-icon-svg { width: 22px; height: 22px; }
 
 .record-main { flex: 1; min-width: 0; }
 .record-price { margin: 0; font-size: 18px; font-weight: 800; }

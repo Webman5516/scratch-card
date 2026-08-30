@@ -173,7 +173,9 @@
         diffHtml = `<span class="record-diff ${cls}">${sign}${fmtMoney(net)}</span>`;
       }
       const iconCls = r.isWin ? "win" : "lose";
-      const icon = r.isWin ? "🪙" : "🎫";
+      const icon = r.isWin
+        ? '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        : '<svg viewBox="0 0 24 24" class="record-icon-svg"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>';
       const cardHtml = r.cardNumber ? `<p class="record-card">刮刮樂卡片號 ${escapeHtml(r.cardNumber)}</p>` : "";
       return `
         <li class="record-item" data-id="${r.id}">
