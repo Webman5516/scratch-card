@@ -373,7 +373,7 @@ html, body {
   height: 48px;
   border-radius: 14px;
 }
-.nav-fab .plus-icon { width: 24px; height: 24px; }
+.nav-fab .plus-icon { width: 26px; height: 26px; }
 
 /* ---- modal ---- */
 .modal-overlay {
