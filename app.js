@@ -143,7 +143,7 @@
       }
       const iconCls = r.isWin ? "win" : "lose";
       const icon = r.isWin ? "🪙" : "🎫";
-      const cardHtml = r.cardNumber ? `<p class="record-card">卡號 ${escapeHtml(r.cardNumber)}</p>` : "";
+      const cardHtml = r.cardNumber ? `<p class="record-card">刮刮樂卡片號 ${escapeHtml(r.cardNumber)}</p>` : "";
       return `
         <li class="record-item">
           <div class="record-icon ${iconCls}">${icon}</div>
