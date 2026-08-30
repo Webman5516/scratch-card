@@ -4,6 +4,7 @@
   const API_BASE = "https://scratch-card-5cv.pages.dev";
   const STORAGE_KEY = "johunt_records_v1";
   const USERNAME_KEY = "johunt_username";
+  const THEME_KEY = "johunt_theme";
   const CHART_COLORS = {
     light: { invested: "#2a78d6", won: "#eb6834", grid: "rgba(0,0,0,0.06)", text: "#85898a" },
     dark: { invested: "#3987e5", won: "#d95926", grid: "rgba(255,255,255,0.08)", text: "#9a9a9e" },
@@ -506,6 +507,27 @@
     closeModal();
   }
 
+  /* ---------- theme toggle ---------- */
+  function currentEffectiveTheme() {
+    const explicit = document.documentElement.getAttribute("data-theme");
+    if (explicit) return explicit;
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function updateThemeToggleIcon() {
+    document.getElementById("theme-toggle").textContent = currentEffectiveTheme() === "dark" ? "🌙" : "☀️";
+  }
+
+  function toggleTheme() {
+    const next = currentEffectiveTheme() === "dark" ? "light" : "dark";
+    try { localStorage.setItem(THEME_KEY, next); } catch {}
+    document.documentElement.setAttribute("data-theme", next);
+    updateThemeToggleIcon();
+    if (!document.getElementById("view-analytics").classList.contains("hidden")) {
+      renderAnalyticsChart();
+    }
+  }
+
   /* ---------- username modal ---------- */
   function openUserModal(forced) {
     document.getElementById("username-input").value = username;
@@ -636,7 +658,18 @@
     if (e.target.id === "user-modal-overlay") closeUserModal();
   });
 
+  document.getElementById("theme-toggle").addEventListener("click", toggleTheme);
+
+  if (window.matchMedia) {
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+      if (document.documentElement.getAttribute("data-theme")) return;
+      updateThemeToggleIcon();
+      if (!document.getElementById("view-analytics").classList.contains("hidden")) renderAnalyticsChart();
+    });
+  }
+
   /* ---------- init ---------- */
+  updateThemeToggleIcon();
   showView("home");
   if (username) {
     loadForUser(username);

@@ -523,8 +523,7 @@ html, body {
 #username-input::placeholder { color: #c7c7cc; }
 
 @media (prefers-color-scheme: dark) {
-  html, body { background: #000; }
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #000000;
     --card-bg: #1c1c1e;
     --text: #f5f5f5;
@@ -533,15 +532,53 @@ html, body {
     --green-bg: #113322;
     --gray-bg: #2c2c2e;
   }
-  .bottom-nav { background: #1c1c1eee; }
-  .modal-sheet { background: #1c1c1e; }
-  .modal-header { background: #1c1c1e; }
-  .price-btn.active { background: #f5f5f5; color: #000; border-color: #f5f5f5; }
-  .segment.active { background: #3a3a3c; color: #fff; }
-  #amount-input { color: #0a84ff; caret-color: #0a84ff; }
-  #ticket-code-input { color: #0a84ff; caret-color: #0a84ff; }
-  #purchase-date-input { color: #0a84ff; color-scheme: dark; }
-  #username-input { color: #0a84ff; caret-color: #0a84ff; }
-  .dot-invested { background: #3987e5; }
-  .dot-won { background: #d95926; }
+  html:not([data-theme="light"]), html:not([data-theme="light"]) body { background: #000; }
+  :root:not([data-theme="light"]) .bottom-nav { background: #1c1c1eee; }
+  :root:not([data-theme="light"]) .modal-sheet { background: #1c1c1e; }
+  :root:not([data-theme="light"]) .modal-header { background: #1c1c1e; }
+  :root:not([data-theme="light"]) .price-btn.active { background: #f5f5f5; color: #000; border-color: #f5f5f5; }
+  :root:not([data-theme="light"]) .segment.active { background: #3a3a3c; color: #fff; }
+  :root:not([data-theme="light"]) #amount-input { color: #0a84ff; caret-color: #0a84ff; }
+  :root:not([data-theme="light"]) #ticket-code-input { color: #0a84ff; caret-color: #0a84ff; }
+  :root:not([data-theme="light"]) #purchase-date-input { color: #0a84ff; color-scheme: dark; }
+  :root:not([data-theme="light"]) #username-input { color: #0a84ff; caret-color: #0a84ff; }
+  :root:not([data-theme="light"]) .dot-invested { background: #3987e5; }
+  :root:not([data-theme="light"]) .dot-won { background: #d95926; }
 }
+
+:root[data-theme="dark"] {
+  --bg: #000000;
+  --card-bg: #1c1c1e;
+  --text: #f5f5f5;
+  --text-dim: #9a9a9e;
+  --border: #2c2c2e;
+  --green-bg: #113322;
+  --gray-bg: #2c2c2e;
+}
+html[data-theme="dark"], html[data-theme="dark"] body { background: #000; }
+:root[data-theme="dark"] .bottom-nav { background: #1c1c1eee; }
+:root[data-theme="dark"] .modal-sheet { background: #1c1c1e; }
+:root[data-theme="dark"] .modal-header { background: #1c1c1e; }
+:root[data-theme="dark"] .price-btn.active { background: #f5f5f5; color: #000; border-color: #f5f5f5; }
+:root[data-theme="dark"] .segment.active { background: #3a3a3c; color: #fff; }
+:root[data-theme="dark"] #amount-input { color: #0a84ff; caret-color: #0a84ff; }
+:root[data-theme="dark"] #ticket-code-input { color: #0a84ff; caret-color: #0a84ff; }
+:root[data-theme="dark"] #purchase-date-input { color: #0a84ff; color-scheme: dark; }
+:root[data-theme="dark"] #username-input { color: #0a84ff; caret-color: #0a84ff; }
+:root[data-theme="dark"] .dot-invested { background: #3987e5; }
+:root[data-theme="dark"] .dot-won { background: #d95926; }
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  font-size: 17px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
