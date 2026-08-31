@@ -323,10 +323,49 @@
     };
   }
 
+  function computeWinningCardSummaries(mode) {
+    const periods = new Map();
+    for (const r of records) {
+      if (!r.isWin || !r.cardNumber) continue;
+      const key = mode === "year" ? r.purchaseDate.slice(0, 4) : r.purchaseDate.slice(0, 7);
+      if (!periods.has(key)) periods.set(key, new Map());
+      const cardMap = periods.get(key);
+      cardMap.set(r.cardNumber, (cardMap.get(r.cardNumber) || 0) + 1);
+    }
+    return [...periods.entries()]
+      .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+      .map(([key, cardMap]) => {
+        const label = mode === "year" ? key : key.replace("-", "/");
+        const summary = [...cardMap.entries()]
+          .sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))
+          .map(([card, count]) => (count > 1 ? `${card}(${count})` : card))
+          .join(", ");
+        return { label, summary };
+      });
+  }
+
+  function renderWinningCardSummaries() {
+    const container = document.getElementById("chart-cards-detail");
+    const rows = computeWinningCardSummaries(analyticsPeriod);
+    if (rows.length === 0) {
+      container.innerHTML = "";
+      container.classList.add("hidden");
+      return;
+    }
+    container.classList.remove("hidden");
+    container.innerHTML = rows.map((r) => `
+      <div class="chart-cards-row">
+        <span class="chart-cards-period">${escapeHtml(r.label)}</span>
+        <span class="chart-cards-list">${escapeHtml(r.summary)}</span>
+      </div>
+    `).join("");
+  }
+
   function renderAnalyticsChart() {
     const canvas = document.getElementById("analytics-chart");
     const empty = document.getElementById("analytics-empty");
     const { labels, invested, won } = groupRecordsByPeriod(analyticsPeriod);
+    renderWinningCardSummaries();
 
     if (labels.length === 0) {
       empty.classList.remove("hidden");

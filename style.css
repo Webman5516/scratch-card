@@ -268,6 +268,19 @@ html, body {
 
 .chart-wrap { position: relative; width: 100%; height: 240px; }
 
+.chart-cards-detail {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.chart-cards-detail.hidden { display: none; }
+.chart-cards-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; }
+.chart-cards-period { color: var(--text-dim); font-weight: 700; flex-shrink: 0; white-space: nowrap; }
+.chart-cards-list { color: var(--text); text-align: right; }
+
 /* ---- records list ---- */
 .record-list {
   list-style: none;
