@@ -266,7 +266,7 @@ html, body {
 .dot-invested { background: #2a78d6; }
 .dot-won { background: #eb6834; }
 
-.chart-wrap { position: relative; width: 100%; }
+.chart-wrap { position: relative; width: 100%; height: 240px; }
 
 /* ---- records list ---- */
 .record-list {
