@@ -18,7 +18,7 @@
   let username = localStorage.getItem(USERNAME_KEY) || "";
   let draft = { editingId: null, price: null, isWin: true, amount: "", cardNumber: "", purchaseDate: "" };
   let analyticsChart = null;
-  let analyticsPeriod = "year";
+  let analyticsPeriod = "month";
 
   /* ---------- local cache (fallback/offline) ---------- */
   function loadLocalCache() {
@@ -374,6 +374,7 @@
     const options = {
       responsive: true,
       maintainAspectRatio: false,
+      animation: false,
       interaction: { mode: "index", intersect: false },
       plugins: {
         legend: { display: false },
