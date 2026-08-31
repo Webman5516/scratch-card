@@ -270,8 +270,9 @@ html, body {
 
 .chart-cards-detail {
   margin-top: 16px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fdefe4;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -279,7 +280,7 @@ html, body {
 .chart-cards-detail.hidden { display: none; }
 .chart-cards-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; }
 .chart-cards-period { color: var(--text-dim); font-weight: 700; flex-shrink: 0; white-space: nowrap; }
-.chart-cards-list { color: var(--text); text-align: right; }
+.chart-cards-list { color: #eb6834; font-weight: 800; text-align: right; }
 
 /* ---- records list ---- */
 .record-list {
@@ -572,6 +573,8 @@ html, body {
   :root:not([data-theme="light"]) #username-input { color: #0a84ff; caret-color: #0a84ff; }
   :root:not([data-theme="light"]) .dot-invested { background: #3987e5; }
   :root:not([data-theme="light"]) .dot-won { background: #d95926; }
+  :root:not([data-theme="light"]) .chart-cards-detail { background: #2e2013; }
+  :root:not([data-theme="light"]) .chart-cards-list { color: #d95926; }
 }
 
 :root[data-theme="dark"] {
@@ -595,6 +598,8 @@ html[data-theme="dark"], html[data-theme="dark"] body { background: #000; }
 :root[data-theme="dark"] #username-input { color: #0a84ff; caret-color: #0a84ff; }
 :root[data-theme="dark"] .dot-invested { background: #3987e5; }
 :root[data-theme="dark"] .dot-won { background: #d95926; }
+:root[data-theme="dark"] .chart-cards-detail { background: #2e2013; }
+:root[data-theme="dark"] .chart-cards-list { color: #d95926; }
 
 .theme-toggle {
   display: flex;
